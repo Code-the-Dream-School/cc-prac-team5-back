@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.route('/').get(getParents).post(registerParent);
 
-router.route('/:id').get(getCurrentParent).patch(updateParent.delete(deleteParent);
+router.route('/:id').get(getCurrentParent).patch(updateParent).delete(deleteParent);
 
 module.exports = router;
 

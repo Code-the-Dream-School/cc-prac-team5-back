@@ -5,7 +5,7 @@ const favicon = require('express-favicon');
 const logger = require('morgan');
 
 const mainRouter = require('./routes/mainRouter');
-const userRouter = require('./routes/userRouter');
+const parentRouter = require('./routes/userRoutes/parentRouter');
 const tasksRouter = require('./routes/tasksRouter')
 
 // middleware
@@ -18,7 +18,7 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 
 // routes
 app.use('/api/v1', mainRouter);
-app.use('/api/v1/users', userRouter);
+app.use('/api/v1/parents', parentRouter);
 app.use('/api/v1/tasks', tasksRouter);
 
 
