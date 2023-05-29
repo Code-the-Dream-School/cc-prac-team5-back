@@ -28,6 +28,9 @@ const parentSchema = new mongoose.Schema({
                 type: mongoose.Schema.ObjectId,
                 ref: 'Child',
             },
+            name: {
+                type: String
+            },
             userName: {
                 type: String
             }

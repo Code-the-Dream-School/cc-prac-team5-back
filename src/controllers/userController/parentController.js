@@ -1,32 +1,32 @@
-const createUser = (req, res) => {
+const registerParent = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const getAllUsers = (req, res) => {
+const getParents = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const getUser = (req, res) => {
+const getCurrentParent = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const updateUser = (req, res) => {
+const updateParent = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const deleteUser = (req, res) => {
+const deleteParent = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
@@ -34,9 +34,9 @@ const deleteUser = (req, res) => {
 };
 
 module.exports = {
-    createUser,
-    getAllUsers,
-    getUser,
-    updateUser,
-    deleteUser
+  registerParent,
+  getParents,
+  getCurrentParent,
+  updateParent,
+  deleteParent
 }
