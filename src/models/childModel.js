@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const childSchema = new mongoose.Schema({
-    userName: {
+    name: {
         type: String,
         required: true
     },
@@ -16,9 +16,9 @@ const childSchema = new mongoose.Schema({
             }
         }
     ],
-    awards: [
+    rewards: [
         {
-            awardId: {
+            rewardId: {
                 type: mongoose.Schema.ObjectId,
                 ref: 'Awards',
             },
@@ -27,7 +27,11 @@ const childSchema = new mongoose.Schema({
             }
         }
         
-    ]
+    ],
+    image: {
+        type: String,
+        default: 'default.jpg',
+    },
 });
 
 const Child = mongoose.model('Child', childSchema);
