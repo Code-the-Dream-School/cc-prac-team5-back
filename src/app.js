@@ -5,7 +5,7 @@ const favicon = require('express-favicon');
 const logger = require('morgan');
 
 const mainRouter = require('./routes/mainRouter');
-const parentRouter = require('./routes/userRoutes/parentRouter');
+const parentRouter = require('./routes/parentRouter');
 const tasksRouter = require('./routes/tasksRouter')
 
 // middleware

@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { registerParent, getParents, getCurrentParent, updateParent, deleteParent } = require('../../controllers/userController/parentController');
+const { registerParent, getParents, getCurrentParent, updateParent, deleteParent } = require('../controllers/userController/parentController');
 
 const router = express.Router();
 

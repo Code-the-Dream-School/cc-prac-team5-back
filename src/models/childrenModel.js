@@ -1,9 +1,15 @@
 const mongoose = require('mongoose');
 
-const childSchema = new mongoose.Schema({
-    name: {
+const childrenSchema = new mongoose.Schema({
+    userName: {
         type: String,
         required: true
+    },
+    password: {
+        type: String,
+        required: [true, 'Please provide a password'],
+        minLength: [6, 'Password must be at least 6 characters long'],
+        trim: true,
     },
     tasks: [
         {
@@ -12,7 +18,7 @@ const childSchema = new mongoose.Schema({
                 ref: 'Tasks',
             },
             isCompleted: {
-                type: Boolean,
+                type: false,
             }
         }
     ],
@@ -20,7 +26,7 @@ const childSchema = new mongoose.Schema({
         {
             rewardId: {
                 type: mongoose.Schema.ObjectId,
-                ref: 'Awards',
+                ref: 'Rewards',
             },
             receivedAt: {
                 type: Date
@@ -34,6 +40,6 @@ const childSchema = new mongoose.Schema({
     },
 });
 
-const Child = mongoose.model('Child', childSchema);
+const Children = mongoose.model('Children', childrenSchema);
 
-module.exports = Child;
+module.exports = Children;

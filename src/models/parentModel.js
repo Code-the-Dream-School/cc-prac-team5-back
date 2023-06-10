@@ -5,10 +5,6 @@ const parentSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide name']
     },
-    userName: {
-        type: String,
-        required: [true, 'Please provide user name']
-    },
     email: {
         type: String,
         required: [true, 'Please provide email address'],
@@ -24,16 +20,14 @@ const parentSchema = new mongoose.Schema({
     },
     children: [
         {
-            childId: {
-                type: mongoose.Schema.ObjectId,
-                ref: 'Child',
-            },
-            name: {
-                type: String
-            },
-            userName: {
-                type: String
-            }
+        type: mongoose.Schema.ObjectId,
+        ref: 'Children',
+        }
+    ],
+    rewards: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'Reward',
         }
     ]
 });

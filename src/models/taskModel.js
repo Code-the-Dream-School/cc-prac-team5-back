@@ -4,10 +4,10 @@ const taskSchema = new mongoose.Schema({
     title: {
         type: 'String',
         required: [true, 'Please provide task title'],
-        description: {
-            type: 'String',
-            required: [true, 'Please provide task description'],
-        },
+    },
+    description: {
+        type: 'String',
+        required: [true, 'Please provide task description'],
     },
     points: {
         type: Number,
@@ -19,7 +19,7 @@ const taskSchema = new mongoose.Schema({
         ref: 'child'
     },
     completedAt: Date,
-    isApproved: Boolean  
+    isApproved: false,  
 });
 
 const Task = mongoose.Model('Task', taskSchema);
