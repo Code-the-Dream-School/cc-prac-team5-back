@@ -1,42 +1,41 @@
-// const registerParent = (req, res) => {
-//     res.status(500).json({ 
-//         status: 'error',
-//         message: 'This route has not been defined.'
-//     });
-// };
+//Child logs on
+//views current assigned tasks
+//mark task as completed
+//can view past tasks
+//view awards and points
 
-const getParents = (req, res) => {
+exports.createChild = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const getCurrentParent = (req, res) => {
+exports.getAllChildren = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const updateParent = (req, res) => {
+
+exports.getChildById = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const deleteParent = (req, res) => {
+exports.editChild = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-module.exports = {
-//   registerParent,
-  getParents,
-  getCurrentParent,
-  updateParent,
-  deleteParent
-}
+exports.deleteChild = (req, res) => {
+    res.status(500).json({ 
+        status: 'error',
+        message: 'This route has not been defined.'
+    });
+};

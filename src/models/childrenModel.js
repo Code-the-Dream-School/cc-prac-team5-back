@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const childrenSchema = new mongoose.Schema({
     userName: {
@@ -10,6 +11,11 @@ const childrenSchema = new mongoose.Schema({
         required: [true, 'Please provide a password'],
         minLength: [6, 'Password must be at least 6 characters long'],
         trim: true,
+        select: false,
+    },
+    image: {
+        type: String,
+        default: 'default.jpg',
     },
     tasks: [
         {
@@ -18,7 +24,7 @@ const childrenSchema = new mongoose.Schema({
                 ref: 'Tasks',
             },
             isCompleted: {
-                type: false,
+                type: [Boolean, false],
             }
         }
     ],
@@ -34,11 +40,14 @@ const childrenSchema = new mongoose.Schema({
         }
         
     ],
-    image: {
-        type: String,
-        default: 'default.jpg',
-    },
 });
+
+childrenSchema.pre('save', async function(next) {
+    //if password has been changed
+    if(!this.isModified('password')) return next();
+    
+    this.password = await bcrypt.hash(this.password, 12);
+})
 
 const Children = mongoose.model('Children', childrenSchema);
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const parentSchema = new mongoose.Schema({
     name: {
@@ -17,6 +18,7 @@ const parentSchema = new mongoose.Schema({
         required: [true, 'Please provide a password'],
         minLength: [6, 'Password must be at least 6 characters long'],
         trim: true,
+        select: false,
     },
     children: [
         {
@@ -31,6 +33,22 @@ const parentSchema = new mongoose.Schema({
         }
     ]
 });
+
+parentSchema.pre('save', async function(next){
+    //if password has been changed
+    if(!this.isModified('password')) return next();
+    
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+})
+
+//create an instance method - will be available for all documents of this collection
+parentSchema.methods.correctPassword = async function(
+    candidatePassword, 
+    userPassword) {
+        const isMatch = await bcrypt.compare(candidatePassword, userPassword);
+        return isMatch;
+};
 
 const Parent = mongoose.model('Parent', parentSchema);
 
