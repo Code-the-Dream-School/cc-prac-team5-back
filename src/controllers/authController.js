@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const CustomAPIError = require('../error-handlers/custom-api');
 
 const signToken = (id) => {
-    jwt.sign({ id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 }
@@ -35,18 +35,33 @@ exports.createChild = catchAsync( async (req, res, next) => {
         password: req.body.password,
     });
     
-    const token = jwt.sign({ id: newChild._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    })
+    // update children field in parent model
+    const updatedParent = await Parent.findByIdAndUpdate(
+        req.body.parentId,
+        { 
+            $push: 
+            { children: newChild._id }
+         },
+        { 
+            new: true,
+        }
+    );
+    
+    if(!updatedParent){
+        return next(new CustomAPIError('User not found', 404))
+    }
+    const token = signToken(newChild._id)
     
     res.status(201).json({
         status: 'success',
         token,
         data: {
             child: newChild,
+            parent: updatedParent
         }
-    });
-});
+    })
+    next();
+})
 
 exports.login = catchAsync (async (req, res, next) => {
     const { email, password } = req.body;
@@ -61,8 +76,29 @@ exports.login = catchAsync (async (req, res, next) => {
     };
     
     const token = signToken(parent._id);
+    console.log(token);
     res.status(200).json({
         status: 'success',
         token
     })
+})
+
+exports.loginChild = catchAsync (async (req, res, next) => {
+    const { userName, password } = req.body;
+    if(!userName || !password) {
+        return next(new CustomAPIError('Please provide username and password', 400))
+    };
+    
+    const child = await Children.findOne({ userName }).select('+password');
+    
+    if(!child || !(await child.correctPassword(password, child.password))) {
+        return next(new CustomAPIError('Incorrect userName or password'), 401);
+    };
+    
+    const token = signToken(child._id);
+    res.status(200).json({
+        status: 'success',
+        token
+    })
+    
 })

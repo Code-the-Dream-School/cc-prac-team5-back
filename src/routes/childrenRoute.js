@@ -4,6 +4,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 
 router.post('/createChild', authController.createChild);
+router.post('/loginChild', authController.loginChild);
 
 const childrenController = require('../controllers/userController/childrenController');
 

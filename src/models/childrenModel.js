@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const childrenSchema = new mongoose.Schema({
     userName: {
         type: String,
+        unique: true,
         required: true
     },
     password: {
@@ -48,6 +49,13 @@ childrenSchema.pre('save', async function(next) {
     
     this.password = await bcrypt.hash(this.password, 12);
 })
+
+childrenSchema.methods.correctPassword = async function(
+    candidatePassword, 
+    userPassword) {
+        const isMatch = await bcrypt.compare(candidatePassword, userPassword);
+        return isMatch;
+};
 
 const Children = mongoose.model('Children', childrenSchema);
 
