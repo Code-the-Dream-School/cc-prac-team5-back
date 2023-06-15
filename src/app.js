@@ -4,10 +4,12 @@ const cors = require('cors')
 const favicon = require('express-favicon');
 const logger = require('morgan');
 
-const mainRouter = require('./routes/mainRoute');
-const parentRouter = require('./routes/parentRoute');
-const childrenRouter = require('./routes/childrenRoute');
-const tasksRouter = require('./routes/tasksRoute')
+const { 
+    mainRouter, 
+    parentRouter, 
+    childrenRouter, 
+    tasksRouter } 
+    = require('./routes/index');
 
 // middleware
 app.use(cors());

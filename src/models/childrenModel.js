@@ -24,23 +24,12 @@ const childrenSchema = new mongoose.Schema({
                 type: mongoose.Schema.ObjectId,
                 ref: 'Tasks',
             },
-            isCompleted: {
-                type: [Boolean, false],
-            }
         }
     ],
-    rewards: [
-        {
-            rewardId: {
-                type: mongoose.Schema.ObjectId,
-                ref: 'Rewards',
-            },
-            receivedAt: {
-                type: Date
-            }
-        }
-        
-    ],
+    totalPoints: {
+        type: Number,
+        default: 0
+    }
 });
 
 childrenSchema.pre('save', async function(next) {
