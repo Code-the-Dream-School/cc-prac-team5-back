@@ -13,6 +13,18 @@ const taskSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    rewards: [
+        {
+            rewardId: {
+                type: mongoose.Schema.ObjectId,
+                ref: 'Rewards',
+            },
+            receivedAt: {
+                type: Date
+            }
+        }
+        
+    ],
     createdAt: Date,
     assignedTo: {
         type: mongoose.Schema.ObjectId,
