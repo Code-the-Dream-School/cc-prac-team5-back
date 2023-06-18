@@ -6,11 +6,6 @@ const rewardSchema = new mongoose.Schema(
     description: String,
     points: Number
     },
-    rewards: [
-        {
-            
-        }
-    ]
 );
 
 const Reward = mongoose.model('Reward', rewardSchema);
