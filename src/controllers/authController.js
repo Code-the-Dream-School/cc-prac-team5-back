@@ -32,7 +32,7 @@ exports.register = catchAsync (async (req, res, next) => {
 exports.createChild = catchAsync( async (req, res, next) => {
     const newChild = await Children.create({
         userName: req.body.userName,
-        password: req.body.password,
+        pin: req.body.pin,
     });
     
     // update children field in parent model
@@ -84,15 +84,15 @@ exports.login = catchAsync (async (req, res, next) => {
 })
 
 exports.loginChild = catchAsync (async (req, res, next) => {
-    const { userName, password } = req.body;
-    if(!userName || !password) {
-        return next(new CustomAPIError('Please provide username and password', 400))
+    const { userName, pin } = req.body;
+    if(!userName || !pin) {
+        return next(new CustomAPIError('Please provide username and PIN', 400))
     };
     
-    const child = await Children.findOne({ userName }).select('+password');
+    const child = await Children.findOne({ userName }).select('+pin');
     
-    if(!child || !(await child.correctPassword(password, child.password))) {
-        return next(new CustomAPIError('Incorrect userName or password'), 401);
+    if(!child || !(await child.correctPin(pin, child.pin))) {
+        return next(new CustomAPIError('Incorrect userName or PIN'), 401);
     };
     
     const token = signToken(child._id);

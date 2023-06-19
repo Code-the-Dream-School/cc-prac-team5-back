@@ -7,12 +7,19 @@ const childrenSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    password: {
+    pin: {
         type: String,
-        required: [true, 'Please provide a password'],
-        minLength: [6, 'Password must be at least 6 characters long'],
+        required: [true, 'Please provide a PIN'],
+        minLength: [4, 'PIN must be at least 4 characters long'],
         trim: true,
         select: false,
+        match: [/^\d{4}$/, 'Not a valid PIN'],
+        // validate: {
+        //     validator: function(value) {
+        //         return /^\d{4}$/.test(value);
+        //     },
+        //     message: 'Please enter a valid PIN',
+        // },
     },
     image: {
         type: String,
@@ -33,16 +40,16 @@ const childrenSchema = new mongoose.Schema({
 });
 
 childrenSchema.pre('save', async function(next) {
-    //if password has been changed
-    if(!this.isModified('password')) return next();
+    //if pin has been changed
+    if(!this.isModified('pin')) return next();
     
-    this.password = await bcrypt.hash(this.password, 12);
+    this.pin = await bcrypt.hash(this.pin, 12);
 })
 
-childrenSchema.methods.correctPassword = async function(
-    candidatePassword, 
-    userPassword) {
-        const isMatch = await bcrypt.compare(candidatePassword, userPassword);
+childrenSchema.methods.correctPin = async function(
+    candidatePin, 
+    userPin) {
+        const isMatch = await bcrypt.compare(candidatePin, userPin);
         return isMatch;
 };
 
