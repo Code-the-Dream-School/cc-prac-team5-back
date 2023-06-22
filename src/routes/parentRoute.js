@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+router.post('/createChild',authController.restrictToParents, authController.createChild);
 
 
 router.route('/').get(getParents);

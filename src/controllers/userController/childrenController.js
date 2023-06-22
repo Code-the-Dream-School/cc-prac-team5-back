@@ -14,15 +14,7 @@ const sharp = require('sharp');
 //     }
 // });
 
-const multerStorage = multer.diskStorage({
-    destination: (req, file, cb) => { //cb function is like next function in express
-        cb(null, 'public/img/children');
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-        cb(null, file.fieldname + '-' + uniqueSuffix)
-    }
-});
+const multerStorage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
     if(file.mimetype.startsWith('image')) {
@@ -61,16 +53,17 @@ exports.resizeUploadedImage = catchAsync(async (req, res, next) => {
    
 exports.updateMe = catchAsync(async (req, res, next) => {
     //child should not update PIN here
-    if(req.body.PIN) {
+    if(req.body.pin) {
         return next(new CustomAPIError('Please use update my PIN'), 400);
     }
     
     const updatedChild = await Children.findByIdAndUpdate(
         req.body.id,
-        { image: req.file.filename  },
+        { image: req.file.path  },
         { new: true, }
         );
- 
+       
+        console.log(req.body.id)
         
         if(!updatedChild) {
             return next(new CustomAPIError('No user with that ID was found', 404));
@@ -113,6 +106,7 @@ exports.deleteChild = (req, res) => {
 };
 
 //Child logs on
+//can upload their photo
 //views current assigned tasks
 //mark task as completed
 //can view past tasks

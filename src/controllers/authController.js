@@ -1,4 +1,5 @@
-jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 const Parent = require('../models/parentModel');
 const Children = require('../models/childrenModel');
 const catchAsync = require('../utils/catchAsync');
@@ -37,7 +38,7 @@ exports.createChild = catchAsync( async (req, res, next) => {
     
     // update children field in parent model
     const updatedParent = await Parent.findByIdAndUpdate(
-        req.body.parentId,
+        req.user.id,
         { 
             $push: 
             { children: newChild._id }
@@ -60,6 +61,8 @@ exports.createChild = catchAsync( async (req, res, next) => {
             parent: updatedParent
         }
     })
+    console.log(newChild);
+    console.log(updatedParent);
     next();
 })
 
@@ -102,3 +105,57 @@ exports.loginChild = catchAsync (async (req, res, next) => {
     })
     
 })
+
+exports.restrictToParents = catchAsync (async (req, res, next) =>{
+    //get token and check for presence
+    let token;
+    
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+        token = req.headers.authorization.split(' ')[1];
+    }
+    
+    if(!token){
+        return next(new CustomAPIError('User not authorized, please login in to view page', 401));
+    };
+    
+    //verify token - use promisify - built in nodejs - returns a promise
+    const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    
+    //check if user still exist - parent
+    let currentUser = await Parent.findById(decodedToken.id);
+    
+    if(!currentUser){
+        return next(new CustomAPIError('User not found'));
+    }
+    
+    //grant access
+    req.user = currentUser;
+    next();
+});
+
+exports.restrictToChildren = catchAsync (async (req, res, next) =>{
+    //get token and check for presence
+    let token;
+    
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+        token = req.headers.authorization.split(' ')[1];
+    }
+    
+    if(!token){
+        return next(new CustomAPIError('Please log in to view page', 401));
+    };
+    
+    //verify token - use promisify - built in nodejs - returns a promise
+    const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    
+    //check if user still exist - child
+    let currentUser = await Children.findById(decodedToken.id);
+    
+    // if(!currentUser){
+    //     return next(new CustomAPIError('User not authorized'));
+    // }
+    
+    //grant access
+    req.user = currentUser;
+    next();
+});
