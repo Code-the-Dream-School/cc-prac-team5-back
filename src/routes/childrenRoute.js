@@ -10,7 +10,7 @@ router.post('/loginChild', authController.loginChild);
 
 router.route('/').get(childrenController.getAllChildren);
 
-router.patch('/updateMe', authController.restrictToChildren, childrenController.uploadImage, childrenController.updateMe);
+router.patch('/updateMe', authController.restrictToChildren, childrenController.uploadImage, childrenController.resizeUploadedImage, childrenController.updateMe);
 
 router.route('/:id').get(childrenController.getChildById).patch(childrenController.editChild).delete(childrenController.deleteChild);
 

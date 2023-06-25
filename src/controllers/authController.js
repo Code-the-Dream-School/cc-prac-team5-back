@@ -53,6 +53,9 @@ exports.createChild = catchAsync( async (req, res, next) => {
     }
     const token = signToken(newChild._id)
     
+    // console.log(newChild);
+    // console.log(updatedParent);
+    
     res.status(201).json({
         status: 'success',
         token,
@@ -61,8 +64,8 @@ exports.createChild = catchAsync( async (req, res, next) => {
             parent: updatedParent
         }
     })
-    console.log(newChild);
-    console.log(updatedParent);
+    // console.log(newChild);
+    // console.log(updatedParent);
     next();
 })
 
@@ -79,7 +82,7 @@ exports.login = catchAsync (async (req, res, next) => {
     };
     
     const token = signToken(parent._id);
-    console.log(token);
+    // console.log(token);
     res.status(200).json({
         status: 'success',
         token
@@ -147,15 +150,17 @@ exports.restrictToChildren = catchAsync (async (req, res, next) =>{
     
     //verify token - use promisify - built in nodejs - returns a promise
     const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    // console.log('decodedToken:', decodedToken)
     
     //check if user still exist - child
     let currentUser = await Children.findById(decodedToken.id);
-    
+    // console.log('currentUser',currentUser)
     // if(!currentUser){
     //     return next(new CustomAPIError('User not authorized'));
     // }
     
     //grant access
     req.user = currentUser;
+    // console.log('current user:',req.user);
     next();
 });

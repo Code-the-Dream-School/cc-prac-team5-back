@@ -14,6 +14,8 @@ const sharp = require('sharp');
 //     }
 // });
 
+//Upload the picture and update the field
+
 const multerStorage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
@@ -36,17 +38,21 @@ exports.resizeUploadedImage = catchAsync(async (req, res, next) => {
     if(!req.file) return next();
     
     //create unique filename
-    const filename = `child-${req.user.id}-${Date.now().jpeg}`;
-    
+    // const filename = `child-${req.user.id}-${Date.now().jpeg}`;// first mistake
+    const filename = `child-${req.user.id}-${Date.now()}.jpeg}`;
     //Resize uploaded image
-    await sharp(req.file.sharp)
+    // await sharp(req.file.sharp)-second mistake
+    await sharp(req.file.buffer)
       .resize(500) // desired width or height
       .toFormat('jpeg')
       .jpeg({  quality: 90 }) // desired quality
       .toFile(`public/img/children/${filename}`);
       
-    req.file.path = `public/img/children/${filename}`;
+    // req.file.path = `public/img/children/${filename}`;
+    req.file.path = `/img/children/${filename}`;
     req.file.filename = filename;
+    
+    console.log(req.file)
     
     next();
 });
@@ -58,12 +64,12 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     }
     
     const updatedChild = await Children.findByIdAndUpdate(
-        req.body.id,
+        req.user.id,
         { image: req.file.path  },
         { new: true, }
         );
        
-        console.log(req.body.id)
+        
         
         if(!updatedChild) {
             return next(new CustomAPIError('No user with that ID was found', 404));
@@ -77,12 +83,14 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getAllChildren = (req, res) => {
+exports.getAllChildren = catchAsync( async (req, res, next) => {
+    const children = await Children.find();
+    
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
-};
+});
 
 
 exports.getChildById = (req, res) => {

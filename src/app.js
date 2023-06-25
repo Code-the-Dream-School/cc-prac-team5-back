@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors')
 const favicon = require('express-favicon');
 const logger = require('morgan');
+const bodyParser = require('body-parser');
 
 const { 
     mainRouter, 
@@ -12,6 +13,7 @@ const {
     = require('./routes/index');
 
 // middleware
+app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
