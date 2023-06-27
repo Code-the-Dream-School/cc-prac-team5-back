@@ -1,50 +1,63 @@
-const createTask = (req, res) => {
+const CustomAPIError = require('../error-handlers/custom-api');
+const catchAsync = require('../utils/catchAsync');
+const Task = require('../models/taskModel');
+
+exports.createTask = catchAsync( async(req, res, next) => {
+    const newTask = await Task.create({
+        title: req.body.title,
+        description: req.body.description,
+        points: req.body.points
+    })
+    
+    console.log(newTask);
+    
+    res.status(201).json({ 
+        status: 'success',
+        data: {
+            task: newTask
+        }
+    })
+    next();
+});
+
+exports.getAllTasks = catchAsync(async (req, res, next) => {
+    const tasks = await Task.find().sort('createdAt');
+    console.log(tasks);
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            data: tasks,
+            count: tasks.length
+        }
+    });
+    next();
+});
+
+exports.getTask = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const getAllTasks = (req, res) => {
+exports.updateTask = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const getTask = (req, res) => {
+exports.deleteTask = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
 
-const updateTask = (req, res) => {
+exports.getCompletedTasks = (req, res) => {
     res.status(500).json({ 
         status: 'error',
         message: 'This route has not been defined.'
     });
 };
-
-const deleteTask = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
-    });
-};
-
-const getCompletedTasks = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
-    });
-};
-
-module.exports = {
-    createTask,
-    getAllTasks,
-    getTask,
-    updateTask,
-    deleteTask,
-    getCompletedTasks
-}

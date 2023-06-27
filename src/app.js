@@ -22,10 +22,10 @@ app.use(express.static('public'))
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
 // routes
-app.use('/api/v1', mainRouter);
 app.use('/api/v1/parents', parentRouter);
 app.use('/api/v1/children', childrenRouter);
 app.use('/api/v1/tasks', tasksRouter);
+app.use('/api/v1', mainRouter);
 
 
 module.exports = app;
