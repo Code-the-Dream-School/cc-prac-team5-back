@@ -10,4 +10,4 @@ const rewardSchema = new mongoose.Schema(
 
 const Reward = mongoose.model('Reward', rewardSchema);
 
-modules.export = Reward;
+module.export = Reward;
