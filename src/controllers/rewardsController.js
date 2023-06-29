@@ -27,9 +27,9 @@ exports.createReward = catchAsync(async(req, res, next) => {
 exports.getAllRewards = catchAsync( async(req, res, next) => {
     const rewards = await Reward.find();
     
-    if(!rewards) {
-        return next(new CustomAPIError('Could not fetch rewards.', 400));
-    }
+    // if(!rewards) {
+    //     return next(new CustomAPIError('Could not fetch rewards.', 400));
+    // }
     
     res.status(200).json({
         status: 'success',
