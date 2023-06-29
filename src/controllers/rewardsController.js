@@ -24,7 +24,68 @@ exports.createReward = catchAsync(async(req, res, next) => {
     next();
 });
 // get all rewards
+exports.getAllRewards = catchAsync( async(req, res, next) => {
+    const rewards = await Reward.find();
+    
+    if(!rewards) {
+        return next(new CustomAPIError('Could not fetch rewards.', 400));
+    }
+    
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: rewards,
+            count: rewards.length
+        }
+    })
+    next();
+});
 // get a single reward based on Id
-// update a single reward
-// edit a reward
+exports.getReward = catchAsync( async(req, res, next) => {
+    const reward = await Reward.findById(req.params.id);
+    
+    if(!reward) {
+        return next(new CustomAPIError('Could not find specified reward.', 400));
+    }
+    
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: reward
+        }
+    })
+    next();
+});
+// update a reward
+exports.editReward = catchAsync( async(req, res, next) =>{
+    const reward = await Reward.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
+    })
+    
+    if(!reward) {
+        return next(new CustomAPIError('Could not update reward.', 400));
+    }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            reward
+        }
+    });
+    next();
+})
+
 // delete a reward
+exports.deleteReward = catchAsync( async(req, res, next) =>{
+    const reward = await Reward.findByIdAndRemove(req.params.id)
+    
+    if(!reward) {
+        return next(new CustomAPIError('Could not delete reward.', 400));
+    }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: null
+    });
+    next();
+})

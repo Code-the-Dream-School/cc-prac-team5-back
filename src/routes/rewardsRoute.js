@@ -6,7 +6,8 @@ const router = express.Router();
 
 router.route('/').post(rewardsController.createReward)
 
-// router.route('/:id').get(taskController.getTask).patch(taskController.updateTask).delete(taskController.deleteTask);
+router.route('/:id').get(rewardsController.getReward).patch(rewardsController.editReward)
+.delete(rewardsController.deleteReward);
 
 
 

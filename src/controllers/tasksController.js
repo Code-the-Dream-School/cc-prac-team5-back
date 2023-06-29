@@ -27,7 +27,9 @@ exports.createTask = catchAsync( async(req, res, next) => {
 exports.getAllTasks = catchAsync(async (req, res, next) => {
     const tasks = await Task.find().sort('createdAt');
     
-  
+    if(!tasks) {
+        return next(new CustomAPIError('Could not fetch tasks.', 400));
+    }
     // console.log(tasks);
     
     res.status(200).json({ 
@@ -42,7 +44,13 @@ exports.getAllTasks = catchAsync(async (req, res, next) => {
 
 exports.getTask = catchAsync( async(req, res, next) => {
     
-    const task = await Task.findById(req.params.id).populate('assignedTo');
+    const task = await Task.findById(req.params.id)
+    .populate('assignedTo')
+    .populate({
+        path:'rewards.rewardId',
+        model: 'Reward',
+    });
+    
     if(!task){
         return next(new CustomAPIError('Could not find task', 400));
     }
@@ -62,7 +70,7 @@ exports.updateTask = catchAsync( async(req, res, next) => {
     });
     
     if(!task){
-        return next(new CustomAPIError('Could not find task', 400));
+        return next(new CustomAPIError('Could update task', 400));
     }
     
     res.status(200).json({ 
