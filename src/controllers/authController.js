@@ -34,6 +34,7 @@ exports.createChild = catchAsync( async (req, res, next) => {
     const newChild = await Children.create({
         userName: req.body.userName,
         pin: req.body.pin,
+        parent: req.body.id,
     });
     
     // update children field in parent model

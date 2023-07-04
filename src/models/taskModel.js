@@ -27,13 +27,21 @@ const taskSchema = new mongoose.Schema({
     ],
     assignedTo: {
         type: mongoose.Schema.ObjectId,
-        ref: 'child'
+        ref: 'Children'
+    },
+    createdBy: {
+        type: mongoose.Schema.ObjectId,
+        ref:'Parent'
     },
     isApproved: {
         type: Boolean,
         enum: [true, false],
         default: false
-    },  
+    }, 
+    isCompleted: {
+        type: Boolean,
+        default: false
+    } 
 },
 {
     timestamps: {
