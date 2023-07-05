@@ -1,50 +1,97 @@
-const createTask = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
-    });
-};
+const CustomAPIError = require('../error-handlers/custom-api');
+const catchAsync = require('../utils/catchAsync');
+const Task = require('../models/taskModel');
 
-const getAllTasks = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
-    });
-};
+exports.createTask = catchAsync( async(req, res, next) => {
+    const newTask = await Task.create({
+        title: req.body.title,
+        description: req.body.description,
+        points: req.body.points,
+        rewards: req.body.rewards,
+        assignedTo: req.body.assignedTo
+    })
+    if(!newTask){
+        return next(new CustomAPIError('Could not create Task', 400));
+    }
+    // console.log(newTask);
+    
+    res.status(201).json({ 
+        status: 'success',
+        data: {
+            task: newTask
+        }
+    })
+    next();
+});
 
-const getTask = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
+exports.getAllTasks = catchAsync(async (req, res, next) => {
+    const tasks = await Task.find().sort('createdAt');
+    
+    if(!tasks) {
+        return next(new CustomAPIError('Could not fetch tasks.', 400));
+    }
+    // console.log(tasks);
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            data: tasks,
+            count: tasks.length
+        }
     });
-};
+    next();
+});
 
-const updateTask = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
+exports.getTask = catchAsync( async(req, res, next) => {
+    
+    const task = await Task.findById(req.params.id)
+    .populate('assignedTo')
+    .populate({
+        path:'rewards.rewardId',
+        model: 'Reward',
     });
-};
-
-const deleteTask = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
+    
+    if(!task){
+        return next(new CustomAPIError('Could not find task', 400));
+    }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            task
+        }
     });
-};
+    next();
+});
 
-const getCompletedTasks = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
+exports.updateTask = catchAsync( async(req, res, next) => {
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
     });
-};
+    
+    if(!task){
+        return next(new CustomAPIError('Could update task', 400));
+    }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            task
+        }
+    });
+    next();
+});
 
-module.exports = {
-    createTask,
-    getAllTasks,
-    getTask,
-    updateTask,
-    deleteTask,
-    getCompletedTasks
-}
+exports.deleteTask = catchAsync( async(req, res, next) => {
+    const task = Task.findByIdAndRemove(req.params.id);
+    
+    if(!task){
+        return next(new CustomAPIError('Could not find task', 400));
+    }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: null,
+    });
+    next();
+});

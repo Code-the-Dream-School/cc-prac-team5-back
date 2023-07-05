@@ -86,36 +86,64 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 exports.getAllChildren = catchAsync( async (req, res, next) => {
     const children = await Children.find();
     
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            data: children,
+            count: children.length
+        }
     });
+    next();
 });
 
 
-exports.getChildById = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
+exports.getChildById = catchAsync( async(req, res, next) => {
+    const child = await Children.findById(req.params.id);
+    
+    if (!child) {
+        return next(new CustomAPIError('Could not find child by given id', 400));
+    }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            data: child
+        }
     });
-};
+    next();
+});
 
 exports.editChild = catchAsync(async (req, res, next) => {
-    if(req.body.password){
-        return next (new CustomAPIError('Cannot update password via this route. 400'))
+    const updatedChild = await Children.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
+    })
+    
+    if (!updatedChild) {
+        return next(new CustomAPIError('Could not update child by given id', 400));
     }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            data: updatedChild
+        }
+    });
+    next();
+    
 });
 
-exports.deleteChild = (req, res) => {
-    res.status(500).json({ 
-        status: 'error',
-        message: 'This route has not been defined.'
+exports.deleteChild = catchAsync(async (req, res, next) => {
+    const child = await Children.findByIdAndRemove(req.params.id)
+    
+    if (!child) {
+        return next(new CustomAPIError('Could not delete selected child', 400));
+    }
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: null,
     });
-};
-
-//Child logs on
-//can upload their photo
-//views current assigned tasks
-//mark task as completed
-//can view past tasks
-//view awards and points
+    next();
+    
+});

@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
     title: {
-        type: 'String',
+        type: String,
         required: [true, 'Please provide task title'],
     },
     description: {
-        type: 'String',
+        type: String,
         required: [true, 'Please provide task description'],
     },
     points: {
@@ -25,15 +25,24 @@ const taskSchema = new mongoose.Schema({
         }
         
     ],
-    createdAt: Date,
     assignedTo: {
         type: mongoose.Schema.ObjectId,
         ref: 'child'
     },
-    completedAt: Date,
-    isApproved: false,  
-});
+    isApproved: {
+        type: Boolean,
+        enum: [true, false],
+        default: false
+    },  
+},
+{
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
+    }
+}
+);
 
-const Task = mongoose.Model('Task', taskSchema);
+const Task = mongoose.model('Task', taskSchema);
 
-modules.exports = Task;
+module.exports = Task;
