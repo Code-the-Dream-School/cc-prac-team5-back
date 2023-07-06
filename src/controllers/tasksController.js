@@ -1,6 +1,7 @@
 const CustomAPIError = require('../error-handlers/custom-api');
 const catchAsync = require('../utils/catchAsync');
 const Task = require('../models/taskModel');
+const sendEmail = require('../utils/email');
 
 exports.createTask = catchAsync( async(req, res, next) => {
     const newTask = await Task.create({
@@ -8,7 +9,8 @@ exports.createTask = catchAsync( async(req, res, next) => {
         description: req.body.description,
         points: req.body.points,
         rewards: req.body.rewards,
-        assignedTo: req.body.assignedTo
+        assignedTo: req.body.assignedTo,
+        createdBy: req.user.id
     })
     if(!newTask){
         return next(new CustomAPIError('Could not create Task', 400));
@@ -25,7 +27,7 @@ exports.createTask = catchAsync( async(req, res, next) => {
 });
 
 exports.getAllTasks = catchAsync(async (req, res, next) => {
-    const tasks = await Task.find().sort('createdAt');
+    const tasks = await Task.find().populate('createdBy').sort('createdAt');
     
     if(!tasks) {
         return next(new CustomAPIError('Could not fetch tasks.', 400));
@@ -93,5 +95,33 @@ exports.deleteTask = catchAsync( async(req, res, next) => {
         status: 'success',
         data: null,
     });
+    next();
+});
+
+exports.completedTask = catchAsync (async (req, res, next) => {
+    const task = await Task.findByIdAndUpdate(req.params.id, {isCompleted: true}, {new: true}).populate('assignedTo').populate('createdBy').populate('rewards');
+    
+    if(!task){
+        return next(new CustomAPIError('task not found, cannot update task', 404));
+    }
+    
+    //fetch parent and child details - email and name respectively
+    
+    console.log(task)
+    let parentEmail = task.createdBy.email;
+    let childName = task.assignedTo.userName;
+    
+    console.log(parentEmail);
+    //create email
+    let emailText = `${childName} has completed task: ${task.title}. Please log in to approve`;
+    
+    await sendEmail(parentEmail, 'Task Completed', emailText);
+    
+        res.status(200).json({
+            status: 'success',
+            data: {
+                task,
+        }
+    }); 
     next();
 });

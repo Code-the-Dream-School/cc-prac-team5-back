@@ -36,6 +36,10 @@ const childrenSchema = new mongoose.Schema({
     totalPoints: {
         type: Number,
         default: 0
+    },
+    parent: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Parent',
     }
 });
 
