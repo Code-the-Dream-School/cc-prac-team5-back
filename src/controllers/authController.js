@@ -155,7 +155,7 @@ exports.restrictToChildren = catchAsync (async (req, res, next) =>{
     
     //check if user still exist - child
     let currentUser = await Children.findById(decodedToken.id);
-    // console.log('currentUser',currentUser)
+    console.log('currentUser',currentUser)
     // if(!currentUser){
     //     return next(new CustomAPIError('User not authorized'));
     // }
