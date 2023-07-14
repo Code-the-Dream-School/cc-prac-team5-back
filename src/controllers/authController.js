@@ -4,6 +4,8 @@ const Parent = require('../models/parentModel');
 const Children = require('../models/childrenModel');
 const catchAsync = require('../utils/catchAsync');
 const CustomAPIError = require('../error-handlers/custom-api');
+const { StatusCodes } = require('http-status-codes');
+
 
 const signToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -11,31 +13,63 @@ const signToken = (id) => {
   });
 }
 
+const createSendToken = (user, res) => {
+    const token = signToken(user._id);
+    const cookieOptions = {
+        expires: new Date(
+            Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true
+    }
+    if(process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+    
+    res.cookie('jwt', token, cookieOptions);
+    
+    user.password = undefined;
+    user.pin = undefined;
+    
+    res.status(200).json({
+        statusbar: 'success',
+        token,
+        data:{
+            user
+        }
+    });
+}
+
 exports.register = catchAsync (async (req, res, next) => {
-    const newParent = await Parent.create({
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
+    const user = new Parent(req.body);
+    await user.save();
+    
+    createSendToken(user, res);
+    next();
+    // const newParent = await Parent.create({
+    //     name: req.body.name,
+    //     email: req.body.email,
+    //     password: req.body.password,
     });
     
-    const token = signToken(newParent._id)
+    // const token = signToken(newParent._id)
     
-    res.status(201).json({
-        status: 'success',
-        token,
-        data: {
-            parent: newParent,
-        }
-    })
-    next();
-});
+    // res.status(201).json({
+    //     status: 'success',
+    //     token,
+    //     data: {
+    //         parent: newParent,
+    //     }
+    // })
+//     next();
+// });
 
 exports.createChild = catchAsync( async (req, res, next) => {
-    const newChild = await Children.create({
-        userName: req.body.userName,
-        pin: req.body.pin,
-        parent: req.body.id,
-    });
+  
+    // const newChild = await Children.create({
+    //     userName: req.body.userName,
+    //     pin: req.body.pin,
+    //     parent: req.body.id,
+    // });
+    const newChild = new Children(req.body);
+    await newChild.save();
     
     // update children field in parent model
     const updatedParent = await Parent.findByIdAndUpdate(
@@ -52,7 +86,9 @@ exports.createChild = catchAsync( async (req, res, next) => {
     if(!updatedParent){
         return next(new CustomAPIError('User not found', 404))
     }
-    const token = signToken(newChild._id)
+    // const token = signToken(newChild._id)
+    createSendToken( newChild, res);
+    // next();
     
     // console.log(newChild);
     // console.log(updatedParent);
@@ -82,12 +118,13 @@ exports.login = catchAsync (async (req, res, next) => {
         return next(new CustomAPIError('Incorrect email or password'), 401);
     };
     
-    const token = signToken(parent._id);
-    // console.log(token);
-    res.status(200).json({
-        status: 'success',
-        token
-    })
+    // const token = signToken(parent._id);
+    // // console.log(token);
+    // res.status(200).json({
+    //     status: 'success',
+    //     token
+    // })
+    createSendToken(parent, res);
 })
 
 exports.loginChild = catchAsync (async (req, res, next) => {
@@ -102,11 +139,12 @@ exports.loginChild = catchAsync (async (req, res, next) => {
         return next(new CustomAPIError('Incorrect userName or PIN'), 401);
     };
     
-    const token = signToken(child._id);
-    res.status(200).json({
-        status: 'success',
-        token
-    })
+    createSendToken(child, res);
+    // const token = signToken(child._id);
+    // res.status(200).json({
+    //     status: 'success',
+    //     token
+    // })
     
 })
 
@@ -155,7 +193,7 @@ exports.restrictToChildren = catchAsync (async (req, res, next) =>{
     
     //check if user still exist - child
     let currentUser = await Children.findById(decodedToken.id);
-    // console.log('currentUser',currentUser)
+    console.log('currentUser',currentUser)
     // if(!currentUser){
     //     return next(new CustomAPIError('User not authorized'));
     // }
