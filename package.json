@@ -5,7 +5,10 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "nodemon src/server.js"
+  },
+  "engines": {
+    "node": "12.x.x"
   },
   "author": "",
   "license": "ISC",
